@@ -80,18 +80,18 @@ export default function About() {
               关注我的Bilibili
             </SocialLink>
             <SocialLink
-              href="https://github.com/ShawnTyn"
+              href="https://github.com/tawnylab"
               icon={GitHubIcon}
               className="mt-4"
             >
               关注我的GitHub
             </SocialLink>
             <SocialLink
-              href="mailto:jishuntian@brotian.com"
+              href="mailto:shawntynji@gmail.com"
               icon={MailIcon}
               className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
             >
-              jishuntian@brotian.com
+              shawntynji@gmail.com
             </SocialLink>
           </ul>
         </div>

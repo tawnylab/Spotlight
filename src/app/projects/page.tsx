@@ -1,17 +1,26 @@
 import { type Metadata } from 'next'
 import Image from 'next/image'
-import { IconCode } from '@tabler/icons-react'
+import { IconCode, type Icon } from '@tabler/icons-react'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import logoAIGCBrotian from '@/images/logos/brotian.svg'
 
-const projects = [
+type Project = {
+  name: string
+  description: string
+  link: { href: string; label: string }
+  logo: string | null
+  Logo: Icon | null
+}
+
+const projects: Project[] = [
   {
     name: '毕业设计（2024）',
     description: '我的2024届复旦专升本毕业设计，定格版本的开源项目。',
-    link: { href: 'https://github.com/ShawnTyn', label: 'github.com' },
+    link: { href: 'https://github.com/tawnylab', label: 'github.com' },
     logo: logoAIGCBrotian,
+    Logo: null,
   },
   {
     name: 'llama.cpp',
@@ -20,6 +29,7 @@ const projects = [
       href: 'https://github.com/ggml-org/llama.cpp',
       label: 'github.com',
     },
+    logo: null,
     Logo: IconCode,
   },
   {
@@ -29,6 +39,7 @@ const projects = [
       href: 'https://github.com/vllm-project/vllm',
       label: 'github.com',
     },
+    logo: null,
     Logo: IconCode,
   },
   {
@@ -39,15 +50,18 @@ const projects = [
       href: 'https://github.com/BerriAI/litellm',
       label: 'github.com',
     },
+    logo: null,
     Logo: IconCode,
   },
   {
     name: 'pi-agent',
-    description: 'AI Agent 工具包：统一 LLM 接口、Agent 循环、TUI 与编码 Agent CLI。',
+    description:
+      'AI Agent 工具包：统一 LLM 接口、Agent 循环、TUI 与编码 Agent CLI。',
     link: {
       href: 'https://github.com/earendil-works/pi',
       label: 'github.com',
     },
+    logo: null,
     Logo: IconCode,
   },
 ]
@@ -88,12 +102,12 @@ export default function Projects() {
                   className="size-8"
                   unoptimized
                 />
-              ) : (
+              ) : project.Logo ? (
                 <project.Logo
                   className="size-6 text-zinc-700 dark:text-zinc-200"
                   stroke={1.5}
                 />
-              )}
+              ) : null}
             </div>
             <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
               <Card.Link href={project.link.href}>{project.name}</Card.Link>
