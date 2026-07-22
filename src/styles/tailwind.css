@@ -1,5 +1,5 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@custom-variant dark (&:where(.dark, .dark *));
 @import './prism.css';
 @import './fonts.css';
-@import 'tailwindcss/utilities';
