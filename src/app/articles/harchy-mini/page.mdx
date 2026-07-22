@@ -1,0 +1,166 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+    author: '季顺天',
+    date: '2026-07-22',
+    title: '第二届 DGX Spark 黑客松"哈基米"小队作品：Harchy Mini',
+    description:
+        '基于 Vercel AI SDK 与 MCP 协议的桌面 Agent，支持工具调用、沙箱安全执行、ComfyUI 出图，并接入 Reachy Mini 机器人做语音交互。',
+}
+
+export const metadata = {
+    title: article.title,
+    description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+## 写在前面
+
+第二届 NVIDIA DGX Spark 黑客松的主题是「让 Agent 创作一切」，决赛在 8 月 2 号。我们小队叫「哈基米」，参赛作品取名 Harchy Mini——既是 Reachy Mini 的谐音梗，也是我们这个小机器人在团队里的昵称。
+
+预赛阶段我把主力精力都压在了一个相对完整的、能跑通的本地 Agent 上：不是只调几次 LLM API 的 demo，而是一个真正接得住工具调用、扛得住沙箱、连得上 MCP、还能跟 Reachy Mini 说话的桌面端应用。
+
+这篇文章主要写一下整体思路、踩过的坑和最终的架构。
+
+## 作品概览
+
+简单一句话：把 LLM 接上本地电脑的「手脚」。
+
+- **工具调用**：用 Vercel AI SDK 的 tool 定义，把本地能力（读文件、跑命令、调 ComfyUI）注册成可调用的工具，让模型自己规划、自己执行。
+- **沙箱安全**：所有用户态可触达的本地执行，全部跑在 Anthropic 开源的 Sandbox Runtime（srt）里，OS 级别隔离文件系统和网络出口，不用拉 Docker。
+- **MCP 接入**：把自研工具按 MCP Server 的协议暴露出去，也能消费第三方的 MCP，让工具生态不局限于自家代码。
+- **Reachy Mini 语音交互**：基于 OpenAI 风格的 speech-to-speech Realtime API 范式，把 VAD、STT、VLM、TTS 全部在 DGX Spark 128G 本地部署，跟机器人串成「说话 → 听见 → 调工具 → 行动 → 说话」的端到端闭环。
+
+UI 部分走的是 Electron + StyleX。Electron 用来跑原生进程（沙箱调度、Reachy SDK 桥接、ComfyUI 客户端等），StyleX 用来做零运行时 CSS，所有样式编译期抽取成原子类，避免在 Electron 里跑 CSS-in-JS 的那点抖动。
+
+## 为什么是这套技术栈
+
+### Vercel AI SDK：tool calling 的 ergonomics
+
+选 Vercel AI SDK 的核心原因是 tool calling 的 ergonomics 太舒服。用 `tool()` 工厂函数配合 Zod schema 把参数声明清楚，写个异步的 `execute` 函数，模型就能自己决定调不调、调哪个、传什么参数。换模型基本零成本，streamText / generateText 那套 API 把多模态、流式、tool loop 标准化了。
+
+在 Electron 的 Renderer 进程里直接用 React 渲染，工具调用的中间状态——参数、结果、重试——都能拿到，做调试 UI 很方便。至于为什么不直接走各家 provider 的官方 SDK：各家协议差异挺大，比赛期间你不会想被某个 provider 的怪 bug 卡住。
+
+### StyleX：Electron 下的样式答案
+
+Electron 里写 CSS-in-JS 历来是个坑：runtime 注入 + IPC 进程边界 = 各种卡顿和样式丢失。StyleX 是 Meta 那套编译期抽取原子类的方案，Babel/SWC 插件把样式在构建期编译成静态 CSS 文件，运行时是零成本的。
+
+在桌面端这点体感很明显：工具调用面板频繁更新，原子类保证样式重计算成本可忽略；主题切换也只是改一组 CSS 变量，静态样式自带缓存友好的特性。
+
+### Motion：让 Agent 的「思考」看得见
+
+LLM 流式输出如果只是文字一行行出现，会很无聊。我用 Motion（前 Framer Motion）做了一套微动效：
+
+- 工具调用开始：圆点呼吸 + 标签淡入
+- 工具调用成功：路径走完一条线
+- 工具调用失败：轻微抖动 + 红色描边
+- Reachy 转头回应：表情屏上的眼睛跟着动
+
+不是花哨，是让用户真的能「看见」Agent 在干啥。AI 应用 UX 的核心从来不是模型，而是把模型的工作流可视化。
+
+### ComfyUI：本地出图
+
+ComfyUI 暴露的 HTTP/WebSocket 接口刚好可以当 MCP tool 暴露给 Agent：提交工作流、查询队列、查询历史这些端点都直接复用。Agent 接到的出图任务，本质就是往 ComfyUI 提交一个 workflow JSON，让 Agent 自己选择 checkpoint、写 prompt、调参数，比死板的预设模板灵活多了。
+
+### Anthropic Sandbox Runtime：安全这一关
+
+这是整个项目我花时间最多的地方。
+
+早期一版直接用 child_process.exec 跑命令，结果演示到一半模型自己脑补出了一个 `rm -rf`。当场给我吓出一身冷汗——这种事在比赛现场演示一次就社死了。
+
+后面切到了 Anthropic 开源的 sandbox-runtime（srt）。它干的事很简单：
+
+- macOS 上包一层 sandbox-exec，外加动态生成的 Seatbelt profile
+- Linux 上走 bubblewrap 加网络命名空间隔离
+- 网络层 HTTP/SOCKS5 代理在外面强制走域名白名单
+
+这玩意儿是 Claude Code 那套沙箱 Bash 的底层，开源出来之后随便集成。比 Docker 启动快几个数量级，Hackathon 这种节奏特别合适。
+
+设计上还做了两件事：
+
+1. **每次工具调用都强制包一层 srt**，哪怕是只读操作——防止模型脑补出奇怪的组合拳。
+2. **MCP Server 本身也包在 srt 里跑**，工具调用的最终执行者是 MCP，而不是 Agent 进程本身。这条边界画清楚之后，整个系统的威胁模型就清晰多了。
+
+## 架构
+
+整体分四层：Electron Renderer 负责 UI 和对话流；Electron Main 负责工具注册、MCP 客户端、srt 调度；底层通过 srt 包出来的隔离环境跑本地工具和命令；Reachy Mini 那一侧独立跑一个 Python daemon，把音频流和机械动作编解码以后通过 WebSocket 跟 Main 通信。
+
+几个关键的边界：
+
+- **Renderer 只跟 Main 说话**，绝不直接 spawn 进程。
+- **Main 通过 MCP 跟外部工具说话**，自己不执行工具逻辑，便于审计和替换。
+- **沙箱不信任任何上层调用**，默认 deny，按需放行。
+- **Reachy 端是独立的进程**，语音/视觉/动作全在自己那侧闭环，不依赖桌面端的工具调用结果。
+
+## 关键模块拆解
+
+### 1. 工具调用
+
+Vercel AI SDK 的 streamText 自带 maxSteps，多轮工具调用很自然。我们把本地工具注册成一组 MCP tool，再让 SDK 消费这些 MCP 接口。
+
+为了让用户能看清每一步，Renderer 里做了一个「步骤树」面板，把每一次 tool-call 和 tool-result 都画成一个节点，可以折叠展开。配合 Motion 的动效，整个对话流像一条会发光的折线图。
+
+### 2. 沙箱调度
+
+所有「能对系统造成影响」的工具，最后都走这一个入口：先动态生成 Seatbelt profile，再交给 srt 包一层执行。Profile 是按工具动态生成的，每个工具的权限边界不一样——readFile 不需要写权限，comfyuiGenerate 需要写 outputs 目录，出图工具要放行 ComfyUI 的端口，等等。
+
+按权限最小化原则，每个工具能动的范围都是显式声明的，不靠黑名单兜底。
+
+### 3. MCP 接入
+
+自己实现的 MCP Server 用 TypeScript SDK，跑在独立 Node 进程里，对外暴露本地工具集。好处是这个 Server 可以独立发布给其他人用，也能在开发时直接用 MCP Inspector 调试——比手写 REST 接口省心多了。
+
+消费第三方 MCP 同样简单，Vercel AI SDK 提供了 MCPClient，几行代码接进来。后面我们就把文件系统、浏览器自动化、SQL 查询这些通用能力都接成了 MCP，工具生态开始长得有点像「本地的工具商店」。
+
+### 4. 语音交互：DGX Spark 上的 Realtime Pipeline
+
+这是这次作品最核心、也是最吃硬件的一部分。
+
+我们参考的是 OpenAI 那种 speech-to-speech Realtime API 的范式：客户端和模型之间是一条持续的双工音频流，模型端可以同时处理听、说、看、决策，避免 ASR → LLM → TTS 这种传统串行带来的延迟。
+
+整个 pipeline 跑在同一台 DGX Spark 上，128G 统一内存是这场游戏能玩起来的关键。
+
+具体到模型和部署：
+
+- **VAD（语音活动检测）**：本地的 Silero VAD，按 30ms 帧跑，纯 CPU 几乎零成本，用来切句+触发下游。
+- **STT（语音转文字）**：用 Paraformer（阿里达摩院开源的流式 ASR 中文模型），跑在 DGX Spark 上。它中文识别稳，对网络流行词和小语种混读鲁棒。
+- **VLM（视觉语言模型，作为对话大脑）**：用 NVIDIA 量化过的 Gemma 4 26B A4B NVFP4 版本，通过 vLLM 部署，提供了一个兼容 OpenAI Realtime 接口的服务。NVFP4 量化 + 128G 统一内存，让 26B A4B 这种 MoE 体量的模型能在单台 Spark 上边跑边响应。
+- **TTS（文字转语音）**：用 Qwen3 TTS，中文音色自然、可控性强，依旧跑在本地。
+
+四个模块都跑在同一台机器上，意味着音频数据全程不出内网——隐私、延迟、成本三件套一次性解决。这也是 DGX Spark 上做 multi-model Agent 跟云端比最大的体感差异：在云端你很难让这种 latency-sensitive 的 pipeline 同时挂这么多模型，而 128G 统一内存 + 高内存带宽让这一切物理上就能发生。
+
+桌面端跟 Reachy 之间的通信走 WebSocket。麦克风采集到的音频经过 VAD 切句后送往 STT，STT 识别出来的文本送进 VLM，VLM 根据上下文决定调哪个 MCP tool、回什么话、要不要让 Reachy 做个表情或转头。TTS 合成的音频直接推到 Reachy 的扬声器，机器人的姿态队列也由 VLM 通过专门的 tool 来驱动。
+
+「说话 → 听见 → 调工具 → 行动 → 说话」这一条龙是这次最有 Demo 感的部分。在观众面前喊一句「帮我做个明天的天气预报海报」，能看到 Reachy Mini 歪头听清楚、调用 ComfyUI 出图、把结果回写到自己的小屏幕上的完整过程——这种体感是纯文本 demo 给不了的。
+
+## 踩过的坑
+
+挑几个印象深的：
+
+- **Electron Renderer 里的流式响应一开始会卡顿**：原因是 React 18 的 concurrent mode + AI SDK 的 stream 一起跑，会频繁调度。换成把流式 chunk 攒 16ms 再 setState 之后，CPU 直接腰斩。
+- **srt 在 macOS 上的 Seatbelt profile 调试**：Apple 那套 SBPL 语言写错了只会静默失败。强烈建议用最小的 profile（`sandbox-exec -s PROFILE bash -c 'echo hi'`）先把模板跑通，再一层一层加规则。
+- **Reachy Mini 的音频回调频率不固定**：直接用 PyAudio 流式推送会卡，最后改成 chunked 队列 + 双缓冲才稳。
+- **ComfyUI 的工作流 JSON 太大**：完整一个 SDXL workflow 能到 50KB+，每次都让模型重写太浪费。最后改成一个「基础 workflow + 节点 patch」的协议，模型只生成 patch，结构和性能都好很多。
+- **DGX Spark 上多模型抢显存**：VLM（26B 量化版）、TTS、STT 同时在线的时候，显存/内存调度需要小心。靠 vLLM 的 chunked prefill 和持续批处理，加上按需把暂时不用的模型 swap 到内存里，才让 128G 一直没破上限。
+
+## 接下来想做的事
+
+- 把工具调用历史持久化到 SQLite，支持「回到上一步」「重放某次会话」。
+- 接入更多 MCP Server（文件系统、浏览器、SQL 等），做成一个本地工具集。
+- Reachy 那侧加一个视觉模块，让机器人能「看到」桌面在发生什么，反过来影响动作——VLM 已经在那儿了，只差一个摄像头桥。
+- 把整套流程录成一个「模型自己调工具」的 replay 系统，方便给非技术观众演示 Agent 究竟在干啥。
+
+## 写在最后
+
+这次黑客松最大的收获不是某个具体的技术点，而是「**模型 + 工具 + 沙箱 + 协议**」这条链路第一次在我手里完整跑通。Demo 当晚面对观众实时跑命令出错时不再心慌，因为沙箱兜住了；模型想调任何新工具也不用改 Agent 代码，因为 MCP 兜住了。
+
+DGX Spark 的 128G 统一内存给这种 multi-model Agent 提供了独特的舞台——语音、视觉、对话大脑都能在本地共处一室，延迟和隐私一次性解决。我们「哈基米」小队很开心能把这台机器的特性用到 Harchy Mini 上去。
+
+Agent 创作一切——但前提是得让它先能安全地做事。
+
+决赛见。
+
+---
+
+附：项目仓库等比赛结束后会整理开源。
