@@ -1,20 +1,12 @@
 import { type Metadata } from 'next'
 import Image from 'next/image'
+import { IconCode } from '@tabler/icons-react'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import logoAIGCBrotian from '@/images/logos/brotian.svg'
-import logoLLaMAFactory from '@/images/logos/llama-factory.jpg'
-import logoOllama from '@/images/logos/ollama.png'
-import logoOpenWebUI from '@/images/logos/open-webui.png'
 
 const projects = [
-  {
-    name: 'AIGC',
-    description: '我的毕业设计（2024）衍生的AIGC项目。',
-    link: { href: 'http://aigc.brotian.com', label: 'aigc.brotian.com' },
-    logo: logoAIGCBrotian,
-  },
   {
     name: '毕业设计（2024）',
     description: '我的2024届复旦专升本毕业设计，定格版本的开源项目。',
@@ -22,30 +14,41 @@ const projects = [
     logo: logoAIGCBrotian,
   },
   {
-    name: 'LLaMA-Factory',
-    description:
-      '轻松微调大模型的实用工具，有web ui，支持模型量化训练，显存占用低、训练速度快。',
+    name: 'llama.cpp',
+    description: 'C/C++ 编写的高性能大模型推理引擎。',
     link: {
-      href: 'https://github.com/hiyouga/LLaMA-Factory',
+      href: 'https://github.com/ggml-org/llama.cpp',
       label: 'github.com',
     },
-    logo: logoLLaMAFactory,
+    Logo: IconCode,
   },
   {
-    name: 'Ollama',
-    description: '轻松部署大模型在本地，配合LLaMA-Factory客制化你的AI大模型。',
-    link: { href: 'https://ollama.com/', label: 'ollama.com' },
-    logo: logoOllama,
-  },
-  {
-    name: 'Open WebUI',
-    description:
-      '用户友好的全栈项目，支持对接Ollama、openai、功能全面、高频迭代、支持用户管理。',
+    name: 'vllm',
+    description: '高吞吐、低显存占用的大模型推理与服务引擎，人人易用。',
     link: {
-      href: 'https://github.com/open-webui/open-webui',
+      href: 'https://github.com/vllm-project/vllm',
       label: 'github.com',
     },
-    logo: logoOpenWebUI,
+    Logo: IconCode,
+  },
+  {
+    name: 'litellm',
+    description:
+      '轻量级 LLM 网关，Rust 内核 + Python SDK，统一调用 100+ LLM 接口。',
+    link: {
+      href: 'https://github.com/BerriAI/litellm',
+      label: 'github.com',
+    },
+    Logo: IconCode,
+  },
+  {
+    name: 'pi-agent',
+    description: 'AI Agent 工具包：统一 LLM 接口、Agent 循环、TUI 与编码 Agent CLI。',
+    link: {
+      href: 'https://github.com/earendil-works/pi',
+      label: 'github.com',
+    },
+    Logo: IconCode,
   },
 ]
 
@@ -78,12 +81,19 @@ export default function Projects() {
         {projects.map((project) => (
           <Card as="li" key={project.name}>
             <div className="relative z-10 flex size-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-              <Image
-                src={project.logo}
-                alt=""
-                className="size-8"
-                unoptimized
-              />
+              {project.logo ? (
+                <Image
+                  src={project.logo}
+                  alt=""
+                  className="size-8"
+                  unoptimized
+                />
+              ) : (
+                <project.Logo
+                  className="size-6 text-zinc-700 dark:text-zinc-200"
+                  stroke={1.5}
+                />
+              )}
             </div>
             <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
               <Card.Link href={project.link.href}>{project.name}</Card.Link>
