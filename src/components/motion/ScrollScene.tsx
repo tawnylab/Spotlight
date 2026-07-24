@@ -23,7 +23,11 @@ export function ScrollScene({
     offset: ['start end', 'end start'],
   })
   let y = useTransform(scrollYProgress, range, [factor * 100, -factor * 100])
-  let opacity = useTransform(scrollYProgress, range, [0, 1, 0])
+  let opacity = useTransform(
+    scrollYProgress,
+    [range[0], (range[0] + range[1]) / 2, range[1]],
+    [0, 1, 0],
+  )
 
   if (reduce) return <div ref={ref} className={className}>{children}</div>
 

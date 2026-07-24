@@ -26,8 +26,14 @@ export function InspirationBurstButton() {
         viewBox="0 0 24 24"
         className="size-5 text-accent"
         aria-hidden="true"
-        animate={isBursting ? { rotate: 180, scale: 0.9 } : { rotate: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        animate={
+          reduce
+            ? { rotate: 0, scale: 1 }
+            : isBursting
+              ? { rotate: 180, scale: 0.9 }
+              : { rotate: 0, scale: 1 }
+        }
+        transition={{ duration: reduce ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <path
           d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
