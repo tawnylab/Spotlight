@@ -36,3 +36,8 @@ next-env.d.ts
 
 # .mcp.json
 .mcp.json
+
+# SDD scratch space (recreated per-run by scripts/task-brief)
+.superpowers/sdd/*.brief.md
+.superpowers/sdd/*.report.md
+.superpowers/sdd/review-*.diff
