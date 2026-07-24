@@ -61,6 +61,10 @@
 
   --shadow-card: var(--shadow-card);
   --shadow-float: var(--shadow-float);
+
+  --font-sans:
+    'ZCOOL KuaiLe', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC',
+    system-ui, sans-serif;
 }
 
 html {
