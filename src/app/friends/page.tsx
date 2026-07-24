@@ -64,10 +64,10 @@ export default function Friends() {
     <div className="py-32">
       <div className="mx-auto max-w-7xl px-6 text-center lg:px-8">
         <div className="mx-auto max-w-2xl">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800 sm:text-4xl dark:text-zinc-100">
+          <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             友情链接
           </h2>
-          <p className="mt-4 text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-4 text-lg leading-8 text-ink-soft">
             这里面个个都是人才，说话又好听，我超喜欢这里的。
           </p>
         </div>
@@ -83,10 +83,10 @@ export default function Friends() {
                 className="mx-auto size-56 rounded-full"
                 unoptimized
               />
-              <h3 className="mt-6 text-base font-semibold leading-7 tracking-tight text-zinc-800 dark:text-zinc-100">
+              <h3 className="mt-6 text-base font-semibold leading-7 tracking-tight text-ink">
                 {person.name}
               </h3>
-              <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              <p className="text-sm leading-6 text-ink-soft">
                 {person.role}
               </p>
               <ul role="list" className="mt-6 flex justify-center gap-x-6">
@@ -94,7 +94,7 @@ export default function Friends() {
                   <li>
                     <a
                       href={person.personalUrl}
-                      className="fill-zinc-400 text-zinc-400 hover:fill-zinc-500 hover:text-gray-500 dark:fill-zinc-600 dark:text-zinc-600"
+                      className="fill-muted text-muted hover:fill-ink-soft hover:text-ink-soft"
                     >
                       <span className="sr-only">Friendly Link</span>
                       <LinkIcon className="size-5" />
@@ -105,7 +105,7 @@ export default function Friends() {
                   <li>
                     <a
                       href={person.bilibiliUrl}
-                      className="fill-zinc-400 text-zinc-400 hover:fill-zinc-500 hover:text-gray-500 dark:fill-zinc-600 dark:text-zinc-600"
+                      className="fill-muted text-muted hover:fill-ink-soft hover:text-ink-soft"
                     >
                       <span className="sr-only">Bilibili</span>
                       <BilibiliIcon className="size-5" />
@@ -116,7 +116,7 @@ export default function Friends() {
                   <li>
                     <a
                       href={person.tiktokUrl}
-                      className="fill-zinc-400 text-zinc-400 hover:fill-zinc-500 hover:text-gray-500 dark:fill-zinc-600 dark:text-zinc-600"
+                      className="fill-muted text-muted hover:fill-ink-soft hover:text-ink-soft"
                     >
                       <span className="sr-only">Tik Tok</span>
                       <TiktokIcon className="size-5" />
@@ -127,7 +127,7 @@ export default function Friends() {
                   <li>
                     <a
                       href={person.xiaohongshuUrl}
-                      className="fill-zinc-400 text-zinc-400 hover:fill-zinc-500 hover:text-gray-500 dark:fill-zinc-600 dark:text-zinc-600"
+                      className="fill-muted text-muted hover:fill-ink-soft hover:text-ink-soft"
                     >
                       <span className="sr-only">Xiao Hong Shu</span>
                       <XiaohongshuIcon className="size-5" />

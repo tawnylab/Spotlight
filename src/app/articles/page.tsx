@@ -48,7 +48,7 @@ export default async function ArticlesIndex() {
       title="随便写点"
       intro="这里是我的一些编程、三维打印、毕业设计、游戏等内容的随笔，按时间顺序整理收集。"
     >
-      <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
+      <div className="md:border-l md:border-line md:pl-6">
         <div className="flex max-w-3xl flex-col space-y-16">
           {articles.map((article) => (
             <Article key={article.slug} article={article} />

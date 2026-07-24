@@ -23,10 +23,10 @@ function SocialLink({
     <li className={clsx(className, 'flex')}>
       <Link
         href={href}
-        className="group flex text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+        className="group flex text-sm font-medium text-ink transition hover:text-accent"
         {...props}
       >
-        <Icon className="size-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500" />
+        <Icon className="size-6 flex-none fill-muted transition group-hover:fill-accent" />
         <span className="ml-4">{children}</span>
       </Link>
     </li>
@@ -48,15 +48,15 @@ export default function About() {
               src={portraitImage}
               alt=""
               sizes="(min-width: 1024px) 32rem, 20rem"
-              className="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover dark:bg-zinc-800"
+              className="aspect-square rotate-3 rounded-2xl bg-paper-raised object-cover"
             />
           </div>
         </div>
         <div className="lg:order-first lg:row-span-2">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+          <h1 className="text-4xl font-bold tracking-tight text-ink sm:text-5xl">
             我叫季顺天，在魔都设计怪东西。
           </h1>
-          <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+          <div className="mt-6 space-y-7 text-base text-ink-soft">
             <p>
               我从小喜欢玩电脑，我在初一的时候用收到的红包买了第一张显卡，那是我第一次拆开电脑机箱，一口气学了很多电脑硬件的知识，换上新显卡后我的游戏体验飙升。这为我之后对科技越来越感兴趣埋下了种子。现在的我小到树莓派、大到PowerEdge都折腾过了。
             </p>
@@ -89,7 +89,7 @@ export default function About() {
             <SocialLink
               href="mailto:shawntynji@gmail.com"
               icon={MailIcon}
-              className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
+              className="mt-8 border-t border-line pt-8"
             >
               shawntynji@gmail.com
             </SocialLink>

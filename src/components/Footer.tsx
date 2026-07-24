@@ -12,7 +12,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className="transition hover:text-teal-500 dark:hover:text-teal-400"
+      className="transition hover:text-accent"
     >
       {children}
     </Link>
@@ -23,10 +23,10 @@ export function Footer() {
   return (
     <footer className="mt-32 flex-none">
       <ContainerOuter>
-        <div className="border-t border-zinc-100 pb-16 pt-10 dark:border-zinc-700/40">
+        <div className="border-t border-line pb-16 pt-10">
           <ContainerInner>
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm font-medium text-ink">
                 <NavLink href="/about">我</NavLink>
                 <NavLink href="/articles">博客</NavLink>
                 <NavLink href="/projects">项目</NavLink>
@@ -34,7 +34,7 @@ export function Footer() {
                 <NavLink href="/uses">用品</NavLink>
                 <NavLink href="/friends">友链</NavLink>
               </div>
-              <p className="text-sm text-zinc-400 dark:text-zinc-500">
+              <p className="text-sm text-muted">
                 &copy; {new Date().getFullYear()}{' '}
                 上海市浦东新区合庆镇天降电脑服务部。{' '}
                 <a href="https://beian.miit.gov.cn/">沪ICP备2023020526号-2</a>
