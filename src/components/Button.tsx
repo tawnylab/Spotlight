@@ -3,9 +3,9 @@ import clsx from 'clsx'
 
 const variantStyles = {
   primary:
-    'bg-ink font-semibold text-paper hover:bg-ink-soft active:bg-ink active:text-paper/70',
+    'bg-ink font-semibold text-paper-raised hover:bg-ink/90 active:bg-ink active:text-paper-raised/70',
   secondary:
-    'bg-paper-raised font-medium text-ink hover:bg-paper active:bg-paper active:text-ink/60',
+    'bg-paper-raised font-medium text-ink ring-1 ring-line hover:bg-paper hover:ring-accent active:text-ink/60',
 }
 
 type ButtonProps = {
