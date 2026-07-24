@@ -83,3 +83,36 @@ body::before {
   opacity: var(--noise-opacity);
   mix-blend-mode: multiply;
 }
+
+@layer components {
+  .coverflow-mask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    mask-image: linear-gradient(to right, transparent 10%, black 25%, black 75%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to right, transparent 10%, black 25%, black 75%, transparent 90%);
+  }
+  .coverflow-carousel {
+    width: 350px;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .coverflow-item {
+    width: 350px;
+    height: 350px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    will-change: transform, opacity;
+  }
+  @media (max-width: 600px) {
+    .coverflow-carousel,
+    .coverflow-item {
+      width: 250px;
+      height: 250px;
+    }
+  }
+}

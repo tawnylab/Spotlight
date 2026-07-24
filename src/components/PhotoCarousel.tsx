@@ -50,63 +50,17 @@ function CoverflowItem({ src, index }: { src: string; index: number }) {
 
 export function PhotoCarousel() {
   return (
-    <>
-      <div className="mask">
-        <Carousel
-          className="coverflow-carousel"
-          items={photos.map((photo, index) => (
-            <CoverflowItem
-              key={photo.name}
-              src={photo.src}
-              index={index}
-            />
-          ))}
-          overflow
-          gap={0}
-          itemSize="manual"
-          safeMargin={200}
-        />
-      </div>
-      <style>{styles}</style>
-    </>
+    <div className="coverflow-mask">
+      <Carousel
+        className="coverflow-carousel"
+        items={photos.map((photo, index) => (
+          <CoverflowItem key={photo.name} src={photo.src} index={index} />
+        ))}
+        overflow
+        gap={0}
+        itemSize="manual"
+        safeMargin={200}
+      />
+    </div>
   )
 }
-
-const styles = `
-.mask {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  mask-image: linear-gradient(to right, transparent 10%, black 25%, black 75%, transparent 90%);
-  -webkit-mask-image: linear-gradient(to right, transparent 10%, black 25%, black 75%, transparent 90%);
-}
-
-.coverflow-carousel {
-  width: 350px;
-  height: 350px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.coverflow-item {
-  width: 350px;
-  height: 350px;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  will-change: transform, opacity;
-}
-
-@media (max-width: 600px) {
-  .coverflow-carousel {
-    width: 250px;
-    height: 250px;
-  }
-  .coverflow-item {
-    width: 250px;
-    height: 250px;
-  }
-}
-`
