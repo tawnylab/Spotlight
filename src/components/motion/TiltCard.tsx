@@ -8,6 +8,7 @@ import {
   useReducedMotion,
 } from 'motion/react'
 import { useRef, type ReactNode } from 'react'
+import { usePointerFine } from './useMotionPreference'
 
 export function TiltCard({
   children,
@@ -23,6 +24,8 @@ export function TiltCard({
   disabled?: boolean
 }) {
   let reduce = useReducedMotion()
+  let finePointer = usePointerFine()
+  let disabledByPointer = !finePointer
   let ref = useRef<HTMLDivElement>(null)
   let px = useMotionValue(0.5)
   let py = useMotionValue(0.5)
@@ -43,7 +46,7 @@ export function TiltCard({
   )
 
   function onMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (reduce || disabled) return
+    if (reduce || disabled || disabledByPointer) return
     let el = ref.current
     if (!el) return
     let rect = el.getBoundingClientRect()
@@ -71,7 +74,7 @@ export function TiltCard({
         style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}
       >
         {children}
-        {!reduce && !disabled && (
+        {!reduce && !disabled && !disabledByPointer && (
           <motion.div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-soft-light"

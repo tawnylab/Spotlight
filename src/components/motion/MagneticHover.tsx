@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'motion/react'
 import { useRef, type ReactNode } from 'react'
+import { usePointerFine } from './useMotionPreference'
 
 export function MagneticHover({
   children,
@@ -15,6 +16,8 @@ export function MagneticHover({
   disabled?: boolean
 }) {
   let reduce = useReducedMotion()
+  let finePointer = usePointerFine()
+  let disabledByPointer = !finePointer
   let ref = useRef<HTMLDivElement>(null)
   let x = useMotionValue(0)
   let y = useMotionValue(0)
@@ -22,7 +25,7 @@ export function MagneticHover({
   let sy = useSpring(y, { stiffness: 350, damping: 30 })
 
   function onMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (reduce || disabled) return
+    if (reduce || disabled || disabledByPointer) return
     let el = ref.current
     if (!el) return
     let rect = el.getBoundingClientRect()
