@@ -4,6 +4,8 @@ import { IconCode, type Icon } from '@tabler/icons-react'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
+import { StaggerGroup } from '@/components/motion/StaggerGroup'
+import { TiltCard } from '@/components/motion/TiltCard'
 import logoAIGCBrotian from '@/images/logos/brotian.svg'
 
 type Project = {
@@ -85,41 +87,43 @@ export const metadata: Metadata = {
 export default function Projects() {
   return (
     <SimpleLayout
-      title="在互联网时代，留下轻描淡写的一笔“天酱到此一游”。"
+      title={'在互联网时代，留下轻描淡写的一笔“天酱到此一游”。'}
       intro="短短几年，我见识了不少项目。这些是我参与过的或是我墙裂推荐的项目，其中有些是开源项目、有些是我独立开发的。"
     >
-      <ul
-        role="list"
+      <StaggerGroup
+        as="ul"
         className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3"
       >
         {projects.map((project) => (
-          <Card as="li" key={project.name}>
-            <div className="relative z-10 flex size-12 items-center justify-center rounded-full bg-paper-raised shadow-[var(--shadow-card)] ring-1 ring-line">
-              {project.logo ? (
-                <Image
-                  src={project.logo}
-                  alt=""
-                  className="size-8"
-                  unoptimized
-                />
-              ) : project.Logo ? (
-                <project.Logo
-                  className="size-6 text-ink-soft"
-                  stroke={1.5}
-                />
-              ) : null}
-            </div>
-            <h2 className="mt-6 text-base font-semibold text-ink">
-              <Card.Link href={project.link.href}>{project.name}</Card.Link>
-            </h2>
-            <Card.Description>{project.description}</Card.Description>
-            <p className="relative z-10 mt-6 flex text-sm font-medium text-muted transition group-hover:text-accent">
-              <LinkIcon className="size-6 flex-none" />
-              <span className="ml-2">{project.link.label}</span>
-            </p>
-          </Card>
+          <TiltCard key={project.name} maxTilt={4} className="h-full">
+            <Card as="li" className="h-full">
+              <div className="relative z-10 flex size-12 items-center justify-center rounded-full bg-paper-raised shadow-[var(--shadow-card)] ring-1 ring-line">
+                {project.logo ? (
+                  <Image
+                    src={project.logo}
+                    alt=""
+                    className="size-8"
+                    unoptimized
+                  />
+                ) : project.Logo ? (
+                  <project.Logo
+                    className="size-6 text-ink-soft"
+                    stroke={1.5}
+                  />
+                ) : null}
+              </div>
+              <h2 className="mt-6 text-base font-semibold text-ink">
+                <Card.Link href={project.link.href}>{project.name}</Card.Link>
+              </h2>
+              <Card.Description>{project.description}</Card.Description>
+              <p className="relative z-10 mt-6 flex text-sm font-medium text-muted transition group-hover:text-accent">
+                <LinkIcon className="size-6 flex-none" />
+                <span className="ml-2">{project.link.label}</span>
+              </p>
+            </Card>
+          </TiltCard>
         ))}
-      </ul>
+      </StaggerGroup>
     </SimpleLayout>
   )
 }
