@@ -2,6 +2,7 @@ import { type Metadata } from 'next'
 
 import { Providers } from '@/app/providers'
 import { Layout } from '@/components/Layout'
+import { MotionConfigProvider } from '@/components/motion/MotionConfigProvider'
 // Cursor 暂未启用 - 待 PR 3 引入 CursorTrails
 
 import '@/styles/tailwind.css'
@@ -29,9 +30,11 @@ export default function RootLayout({
     <html lang="zh-CN" className="h-full antialiased">
       <body className="flex h-full bg-paper text-ink">
         <Providers>
-          <div className="flex w-full">
-            <Layout>{children}</Layout>
-          </div>
+          <MotionConfigProvider>
+            <div className="flex w-full">
+              <Layout>{children}</Layout>
+            </div>
+          </MotionConfigProvider>
         </Providers>
       </body>
     </html>
