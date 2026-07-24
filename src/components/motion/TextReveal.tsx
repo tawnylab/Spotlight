@@ -15,6 +15,7 @@ export function TextReveal({
   text,
   as: Tag = 'span',
   className,
+  id,
   perCharDelay = 0.025,
   startDelay = 0,
   ariaLabel,
@@ -22,6 +23,7 @@ export function TextReveal({
   text: string
   as?: keyof React.JSX.IntrinsicElements
   className?: string
+  id?: string
   perCharDelay?: number
   startDelay?: number
   ariaLabel?: string
@@ -33,6 +35,7 @@ export function TextReveal({
   return (
     <MotionTag
       className={className}
+      id={id}
       aria-label={ariaLabel ?? text}
       initial="hidden"
       whileInView={reduce ? undefined : 'show'}
