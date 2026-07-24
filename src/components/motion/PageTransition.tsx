@@ -12,7 +12,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {!reduce && <PageWipe key={pathname} label={label} />}
       </AnimatePresence>
       <AnimatePresence mode="wait" initial={false}>

@@ -5,21 +5,23 @@ import { motion, useMotionValue, useSpring, useReducedMotion } from 'motion/reac
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { MagneticHover } from '@/components/motion/MagneticHover'
+import { usePointerFine } from '@/components/motion/useMotionPreference'
 
 export default function NotFound() {
   let reduce = useReducedMotion()
+  let fine = usePointerFine()
   let sx = useSpring(useMotionValue(0), { stiffness: 100, damping: 20 })
   let sy = useSpring(useMotionValue(0), { stiffness: 100, damping: 20 })
 
   useEffect(() => {
-    if (reduce) return
+    if (reduce || !fine) return
     let onMove = (e: PointerEvent) => {
       sx.set((e.clientX / window.innerWidth - 0.5) * 24)
       sy.set((e.clientY / window.innerHeight - 0.5) * 24)
     }
     window.addEventListener('pointermove', onMove, { passive: true })
     return () => window.removeEventListener('pointermove', onMove)
-  }, [reduce, sx, sy])
+  }, [reduce, fine, sx, sy])
 
   return (
     <Container className="flex h-full items-center pt-16 sm:pt-32">
@@ -27,7 +29,7 @@ export default function NotFound() {
         <motion.p
           aria-hidden="true"
           className="font-display select-none text-[12rem] font-bold leading-none text-accent/15 sm:text-[18rem]"
-          style={reduce ? undefined : { x: sx, y: sy }}
+          style={reduce || !fine ? undefined : { x: sx, y: sy }}
         >
           404
         </motion.p>

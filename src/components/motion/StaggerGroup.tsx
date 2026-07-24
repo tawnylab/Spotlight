@@ -18,11 +18,26 @@ export function StaggerGroup({
 }) {
   let reduce = useReducedMotion()
   let items = Children.toArray(children)
+
+  // Under prefers-reduced-motion, render children directly with no motion
+  // wrapper, otherwise the `initial="hidden"` variant parks them at
+  // `opacity: 0` permanently.
+  if (reduce) {
+    let StaticTag = Tag as keyof React.JSX.IntrinsicElements
+    return (
+      <StaticTag className={className}>
+        {items.map((child, i) => (
+          <div key={i}>{child}</div>
+        ))}
+      </StaticTag>
+    )
+  }
+
   return (
     <motion.div
       className={className}
       initial="hidden"
-      whileInView={reduce ? undefined : 'show'}
+      whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
       variants={{
         hidden: {},

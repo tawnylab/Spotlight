@@ -30,7 +30,17 @@ export function TextReveal({
 }) {
   let reduce = useReducedMotion()
   let chars = useMemo(() => splitGraphemes(text), [text])
-  let MotionTag = (motion as any)[Tag] ?? motion.span
+  let MotionTag = ((motion as any)[Tag] ?? motion.span) as typeof motion.span
+
+  // Under prefers-reduced-motion, skip the variant-driven reveal entirely so
+  // children don't get stuck at `opacity: 0` on the "hidden" variant.
+  if (reduce) {
+    return (
+      <MotionTag className={className} id={id} aria-label={ariaLabel ?? text}>
+        {text}
+      </MotionTag>
+    )
+  }
 
   return (
     <MotionTag
@@ -38,7 +48,7 @@ export function TextReveal({
       id={id}
       aria-label={ariaLabel ?? text}
       initial="hidden"
-      whileInView={reduce ? undefined : 'show'}
+      whileInView="show"
       viewport={{ once: true, amount: 0.4 }}
       variants={{
         hidden: {},

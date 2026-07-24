@@ -4,38 +4,58 @@ import { motion, useReducedMotion } from 'motion/react'
 import { Children, isValidElement, type ReactNode } from 'react'
 
 /**
- * 给 MDX 文章正文用：抓取子元素中匹配 selector 的节点，
- * 注入 motion 包裹做批次 reveal。
+ * 给 MDX 文章正文用：把 motion 入场动画附加到每个顶层 MDX 元素上，
+ * 不新增 <div>，避免破坏 @tailwindcss/typography 的直接子选择器
+ * （.prose > p + p、.prose > h2 + p 等）。
+ *
+ * 实现：用 motion.create 把每个子元素的 tag 包成一个 typed motion
+ * 组件后再渲染 —— DOM 结构和 prose typography 规则全部保留。
  */
 export function ProseReveal({
   children,
-  selector = 'p, h2, h3, blockquote, pre, figure, ul, ol, hr',
   interval = 0.06,
   className,
 }: {
   children: ReactNode
-  selector?: string
   interval?: number
   className?: string
 }) {
   let reduce = useReducedMotion()
-  let items: ReactNode[] = []
+  let items = Children.toArray(children)
 
-  Children.forEach(children, (child) => {
-    if (isValidElement(child)) {
-      items.push(child)
-    } else if (typeof child === 'string') {
-      items.push(<p key={`t-${items.length}`}>{child}</p>)
-    }
-  })
+  if (reduce) {
+    return (
+      <div className={className}>
+        {items.map((child, i) => {
+          let key = isValidElement(child) ? child.key ?? i : i
+          return <div key={key}>{child}</div>
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className={className}>
-      {items.map((node, i) => {
-        let key = isValidElement(node) ? node.key ?? i : i
-        if (reduce) return <div key={key}>{node}</div>
+      {items.map((child, i) => {
+        if (!isValidElement(child)) {
+          return <span key={i}>{child}</span>
+        }
+        let type = child.type
+        if (typeof type !== 'string') {
+          // 非原生 tag（如自定义 React 组件）保留原状包装不动画，
+          // 不强行挂 motion 避免破坏子组件 props 契约。
+          return <div key={child.key ?? i}>{child}</div>
+        }
+        let MotionEl = motion.create(type)
+        let key = child.key ?? i
+        // Strip React reserved props (key/ref) that shouldn't pass through as DOM attributes.
+        let { key: _k, ref: _r, ...rest } = child.props as {
+          key?: React.Key
+          ref?: React.Ref<unknown>
+          [k: string]: unknown
+        }
         return (
-          <motion.div
+          <MotionEl
             key={key}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -45,9 +65,8 @@ export function ProseReveal({
               ease: [0.16, 1, 0.3, 1],
               delay: i * interval,
             }}
-          >
-            {node}
-          </motion.div>
+            {...rest}
+          />
         )
       })}
     </div>
