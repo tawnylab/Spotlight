@@ -1,6 +1,7 @@
 import { Card } from '@/components/Card'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
+import { StaggerGroup } from '@/components/motion/StaggerGroup'
 
 function ToolsSection({
   children,
@@ -43,9 +44,9 @@ export default function Uses() {
   return (
     <SimpleLayout
       title="我青睐的设备、软件、开发框架，以及其他我的推荐。"
-      intro="很多人问过我“用的什么服务器？有没有推荐的机器？项目用什么开发的？”。我认为多尝试找到自己顺手的才对。这是我觉得好用的东西的清单（仅供参考）。"
+      intro={'很多人问过我“用的什么服务器？有没有推荐的机器？项目用什么开发的？”。我认为多尝试找到自己顺手的才对。这是我觉得好用的东西的清单（仅供参考）。'}
     >
-      <div className="space-y-20">
+      <StaggerGroup className="space-y-20">
         <ToolsSection title="工作站">
           <Tool title="戴尔 PowerEdge R7515 / 银欣 CS351">
             企业级的不间断运行的服务器机箱，适用于动手能力强、对电脑硬件熟悉、有隔音放置空间的DIY爱好者。能够自行选择硬件配置和操作系统，组NAS阵列，部署实用的开源项目。
@@ -100,7 +101,7 @@ export default function Uses() {
             开源代码仓库，信不过公网服务就本地私有化部署一个git仓库。
           </Tool>
         </ToolsSection>
-      </div>
+      </StaggerGroup>
     </SimpleLayout>
   )
 }
