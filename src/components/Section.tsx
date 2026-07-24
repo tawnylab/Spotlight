@@ -1,4 +1,6 @@
 import { useId } from 'react'
+import { TextReveal } from '@/components/motion/TextReveal'
+import { ScrollSectionAxis } from '@/components/motion/ScrollSectionAxis'
 
 export function Section({
   title,
@@ -12,15 +14,16 @@ export function Section({
   return (
     <section
       aria-labelledby={id}
-      className="md:border-l md:border-line md:pl-6"
+      className="relative md:pl-6"
     >
+      <ScrollSectionAxis />
       <div className="grid max-w-3xl grid-cols-1 items-baseline gap-y-8 md:grid-cols-4">
-        <h2
+        <TextReveal
+          as="h2"
+          text={title}
           id={id}
-          className="text-sm font-semibold text-ink"
-        >
-          {title}
-        </h2>
+          className="font-display text-sm font-semibold tracking-wide text-ink"
+        />
         <div className="md:col-span-3">{children}</div>
       </div>
     </section>
