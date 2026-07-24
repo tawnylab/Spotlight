@@ -14,6 +14,7 @@ import {
 import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
+import { InspirationBurstButton } from '@/components/motion/InspirationBurstButton'
 import avatarImage from '@/images/avatar.jpg'
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -377,8 +378,9 @@ export function Header() {
                 <DesktopNavigation className="pointer-events-auto hidden md:block" />
               </div>
               <div className="flex justify-end md:flex-1">
-                {/* 主题按钮位置 - 待 PR 3 引入 InspirationBurstButton */}
-                <div className="pointer-events-auto" />
+                <div className="pointer-events-auto">
+                  <InspirationBurstButton />
+                </div>
               </div>
             </div>
           </Container>
