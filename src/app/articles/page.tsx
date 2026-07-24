@@ -1,7 +1,9 @@
 import { type Metadata } from 'next'
 
 import { Card } from '@/components/Card'
+import { MagneticHover } from '@/components/motion/MagneticHover'
 import { SimpleLayout } from '@/components/SimpleLayout'
+import { StaggerGroup } from '@/components/motion/StaggerGroup'
 import { type ArticleWithSlug, getAllArticles } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
 
@@ -49,11 +51,13 @@ export default async function ArticlesIndex() {
       intro="这里是我的一些编程、三维打印、毕业设计、游戏等内容的随笔，按时间顺序整理收集。"
     >
       <div className="md:border-l md:border-line md:pl-6">
-        <div className="flex max-w-3xl flex-col space-y-16">
+        <StaggerGroup className="flex max-w-3xl flex-col space-y-16">
           {articles.map((article) => (
-            <Article key={article.slug} article={article} />
+            <MagneticHover key={article.slug} strength={0.1}>
+              <Article article={article} />
+            </MagneticHover>
           ))}
-        </div>
+        </StaggerGroup>
       </div>
     </SimpleLayout>
   )
