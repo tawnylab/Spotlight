@@ -6,6 +6,11 @@ import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
 import { GitHubIcon, BilibiliIcon, MailIcon } from '@/components/SocialIcons'
 import { PhotoCarousel } from '@/components/PhotoCarousel'
+import { MagneticHover } from '@/components/motion/MagneticHover'
+import { ScrollScene } from '@/components/motion/ScrollScene'
+import { SectionReveal } from '@/components/motion/SectionReveal'
+import { StaggerGroup } from '@/components/motion/StaggerGroup'
+import { TextReveal } from '@/components/motion/TextReveal'
 import logoBrotian from '@/images/logos/brotian.svg'
 import logoUnknow from '@/images/logos/unknow.svg'
 import logoYonyou from '@/images/logos/yonyou.png'
@@ -190,9 +195,13 @@ function Resume() {
 
 function Photos() {
   return (
-    <div className="mt-16 overflow-x-hidden sm:mt-20">
+    <ScrollScene
+      variant="parallax"
+      factor={0.15}
+      className="mt-16 overflow-x-hidden sm:mt-20"
+    >
       <PhotoCarousel />
-    </div>
+    </ScrollScene>
   )
 }
 
@@ -203,39 +212,49 @@ export default async function Home() {
     <>
       <Container className="mt-9">
         <div className="max-w-2xl">
-          <h1 className="text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-            科技爱好者、码农。
-          </h1>
-          <p className="mt-6 text-base text-ink-soft">
-            哈喽！吾乃天酱，居住在魔都的独立开发者。正在探索AIGC和三维打印领域。
-          </p>
-          <div className="mt-6 flex gap-6">
-            <SocialLink
-              href="https://space.bilibili.com/4793911"
-              aria-label="关注我的Bilibili"
-              icon={BilibiliIcon}
-            />
-            <SocialLink
-              href="https://github.com/tawnylab"
-              aria-label="关注我的GitHub"
-              icon={GitHubIcon}
-            />
-            <SocialLink
-              href="mailto:shawntynji@gmail.com"
-              aria-label="关注我的GitHub"
-              icon={MailIcon}
-            />
-          </div>
+          <TextReveal
+            as="h1"
+            text="科技爱好者、码农。"
+            className="font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl"
+          />
+          <SectionReveal delay={0.6}>
+            <p className="mt-6 text-base text-ink-soft">
+              哈喽！吾乃天酱，居住在魔都的独立开发者。正在探索AIGC和三维打印领域。
+            </p>
+          </SectionReveal>
+          <StaggerGroup className="mt-6 flex gap-6" delay={0.7}>
+            <MagneticHover>
+              <SocialLink
+                href="https://space.bilibili.com/4793911"
+                aria-label="关注我的Bilibili"
+                icon={BilibiliIcon}
+              />
+            </MagneticHover>
+            <MagneticHover>
+              <SocialLink
+                href="https://github.com/tawnylab"
+                aria-label="关注我的GitHub"
+                icon={GitHubIcon}
+              />
+            </MagneticHover>
+            <MagneticHover>
+              <SocialLink
+                href="mailto:shawntynji@gmail.com"
+                aria-label="关注我的GitHub"
+                icon={MailIcon}
+              />
+            </MagneticHover>
+          </StaggerGroup>
         </div>
       </Container>
       <Photos />
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
-          <div className="flex flex-col gap-16">
+          <StaggerGroup className="flex flex-col gap-16">
             {articles.map((article) => (
               <Article key={article.slug} article={article} />
             ))}
-          </div>
+          </StaggerGroup>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
             <Newsletter />
             <Resume />
