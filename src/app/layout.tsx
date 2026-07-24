@@ -3,7 +3,7 @@ import { type Metadata } from 'next'
 import { Providers } from '@/app/providers'
 import { Layout } from '@/components/Layout'
 import { MotionConfigProvider } from '@/components/motion/MotionConfigProvider'
-// Cursor 暂未启用 - 待 PR 3 引入 CursorTrails
+import { CursorTrails } from '@/components/motion/CursorTrails'
 
 import '@/styles/tailwind.css'
 
@@ -31,6 +31,7 @@ export default function RootLayout({
       <body className="flex h-full bg-paper text-ink">
         <Providers>
           <MotionConfigProvider>
+            <CursorTrails />
             <div className="flex w-full">
               <Layout>{children}</Layout>
             </div>
