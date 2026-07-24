@@ -1,8 +1,10 @@
 import { type Metadata } from 'next'
 
 import { Card } from '@/components/Card'
+import { MagneticHover } from '@/components/motion/MagneticHover'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
+import { StaggerGroup } from '@/components/motion/StaggerGroup'
 import { formatDate } from '@/lib/formatDate'
 
 function VideoSection({
@@ -30,14 +32,16 @@ function Appearance({
   href: string
 }) {
   return (
-    <Card as="article">
-      <Card.Title as="h3" href={href}>
-        {title}
-      </Card.Title>
-      <Card.Eyebrow decorate>{formatDate(date)}</Card.Eyebrow>
-      <Card.Description>{description}</Card.Description>
-      <Card.Cta>{cta}</Card.Cta>
-    </Card>
+    <MagneticHover strength={0.08}>
+      <Card as="article">
+        <Card.Title as="h3" href={href}>
+          {title}
+        </Card.Title>
+        <Card.Eyebrow decorate>{formatDate(date)}</Card.Eyebrow>
+        <Card.Description>{description}</Card.Description>
+        <Card.Cta>{cta}</Card.Cta>
+      </Card>
+    </MagneticHover>
   )
 }
 
@@ -52,19 +56,19 @@ export default function Videos() {
       title="通过视频发布的内容更丰富。"
       intro="这里是我去各地游玩、演唱会、编程解说、游戏录屏、摄影等视频的分享。"
     >
-      <div className="space-y-20">
+      <StaggerGroup className="space-y-20">
         <VideoSection title="演唱会">
           <Appearance
             href="https://www.bilibili.com/video/BV1ro4heJEkJ/?share_source=copy_web&vd_source=461c4d65318532e75a7173f5906883d4"
             title="周杰伦"
-            description="“嘉年华”世界巡回演唱会（2024杭州站）"
+            description='"嘉年华"世界巡回演唱会（2024杭州站）'
             date="2024-04-19"
             cta="观看 Live 录像"
           />
           <Appearance
             href="https://www.bilibili.com/video/BV1nC411h7c7/?share_source=copy_web&vd_source=461c4d65318532e75a7173f5906883d4"
             title="林俊杰"
-            description="“JJ20“世界巡回演唱会（2024杭州站）"
+            description='"JJ20"世界巡回演唱会（2024杭州站）'
             date="2024-03-17"
             cta="观看 Live 录像"
           />
@@ -85,7 +89,7 @@ export default function Videos() {
             cta="观看介绍"
           />
         </VideoSection>
-      </div>
+      </StaggerGroup>
     </SimpleLayout>
   )
 }
